@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: File Conversion API
+  version: 0.1
+
+paths:
+  /files/upload:
+    post:
+      summary: Upload file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /files/{fileId}/convert:
+    post:
+      summary: Convert uploaded file (synchronous)
+      parameters:
+        - $ref: '#/components/parameters/FileId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - targetFormat
+              properties:
+                targetFormat:
+                  type: string
+                  example: pdf
+      responses:
+        '200':
+          description: Conversion successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConvertResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          description: Conversion failed (unsupported format, invalid file, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /files/{convertedFileId}/download:
+    get:
+      summary: Download converted file
+      parameters:
+        - name: convertedFileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File stream
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  parameters:
+    FileId:
+      name: fileId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    UploadResponse:
+      type: object
+      required:
+        - fileId
+      properties:
+        fileId:
+          type: string
+          example: "abc123"
+
+    ConvertResponse:
+      type: object
+      required:
+        - convertedFileId
+        - status
+      properties:
+        convertedFileId:
+          type: string
+          example: "def456"
+        status:
+          type: string
+          enum: [success]
+          example: success
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: BAD_REQUEST
+        message:
+          type: string
+          example: Invalid input
+        details:
+          type: object
+          additionalProperties: true
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
