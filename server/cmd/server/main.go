@@ -2,8 +2,8 @@ package main
 
 import (
 	"GoGameV3/internal/handler"
-	"GoGameV3/pkg/conventor"
-
+	"GoGameV3/internal/service"
+	"GoGameV3/pkg/libreoffice"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +19,8 @@ func main() {
 		v1.GET("/files/:convertedFileId/download", handler.DownloadFileById)
 	}
 
-	conventor.Convert(1, "files/1.txt")
-
+	conventor := libreoffice.LibreOffice{}
+	service := service.NewService(conventor)
+	service.HealthCheck()
 	router.Run(":8080")
 }
