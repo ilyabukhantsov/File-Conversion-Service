@@ -4,10 +4,24 @@ import (
 	"GoGameV3/internal/handler"
 	"GoGameV3/internal/service"
 	"GoGameV3/pkg/libreoffice"
+	"fmt"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	var s string
+	fmt.Println("Do you want Mock server [Y/n]")
+	fmt.Scanln(&s)
+
+	s = strings.TrimSpace(strings.ToLower(s))
+
+	if s == "y" || s == "yes" || s == "" {
+		fmt.Println("Mock server Activation...")
+	} else {
+		fmt.Println("Standard server Activation...")
+	}
 	router := gin.Default()
 
 	{

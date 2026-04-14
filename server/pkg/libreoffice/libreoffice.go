@@ -11,19 +11,33 @@ type LibreOffice struct{}
 
 // TODO Make humanlike realisation
 func (c LibreOffice) HealthCheck() string {
-	file, err := os.Create("test.docx")
+	dir := "./files"
+	path := dir + "/test.docx"
+	newFilePath := "./test.pdf"
+	if err := os.Mkdir(dir, 0755); err != nil {
+		log.Println("Critical Problem on creating the dir! ", err)
+		return "FAIL"
+	}
+	defer os.RemoveAll("./files")
+	f, err := os.Create(path)
 	if err != nil {
-		log.Fatal(err)
+		return "FAIL"
 	}
-	cmd := exec.Command("soffice", "--headless", "--convert-to", "pdf", file.Name())
+	f.Close()
+	cmd := exec.Command("soffice", "--headless", "--convert-to", "pdf", path)
 	if err := cmd.Run(); err != nil {
-		log.Fatalln(err)
+		log.Println("Critical Problem on executing the conventor! ", err)
+		return "FAIL"
 	}
-	if err := os.Remove(file.Name()); err != nil {
-		log.Fatalln(err)
+	//Deleting old file
+	if err := os.Remove(path); err != nil {
+		log.Println("Critical Problem on removing the old file! ", err)
+		return "FAIL"
+		//Deleting new file
 	}
-	if err := os.Remove("test.pdf"); err != nil {
-		log.Fatalln(err)
+	if err := os.Remove(newFilePath); err != nil {
+		log.Println("Critical Problem on deleting new file!  ", err)
+		return "FAIL"
 	}
 	fmt.Println("LibreOffice PASS")
 	return string("PASS")
