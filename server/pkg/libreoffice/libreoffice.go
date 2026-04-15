@@ -52,5 +52,4 @@ func (c LibreOffice) Convert(path string) (status string, newFilePath string) {
 func (c LibreOffice) FileCheck(path string) error {
 	fmt.Println("Exist")
 	return nil
-
 }
