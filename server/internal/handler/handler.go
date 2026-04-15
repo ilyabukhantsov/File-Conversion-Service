@@ -18,11 +18,6 @@ func ConvertFileById(c *gin.Context) {
 	c.String(http.StatusOK, "Hello "+id)
 	log.Printf("It works")
 }
-func GetInfoConvertFileById(c *gin.Context) {
-	id := c.Param("convertedFileId")
-	c.String(http.StatusOK, "Hello "+id)
-	log.Printf("It works")
-}
 func DownloadFileById(c *gin.Context) {
 	id := c.Param("convertedFileId")
 	c.String(http.StatusOK, "Hello "+id)
