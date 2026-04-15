@@ -1,15 +1,17 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
 type MockHandler struct{}
 
 func MockFileUpload(c *gin.Context) {
-	//TODO test
 	file, err := c.FormFile("upload")
 	if err != nil {
+		fmt.Println()
 		c.JSON(500, map[string]any{
 			"code":    "BAD_REQUEST",
 			"message": "Invalid input",
@@ -27,9 +29,6 @@ func MockFileUpload(c *gin.Context) {
 	})
 }
 func MockConvertFileById(c *gin.Context) {
-	//TODO implimication convert file by id
-	id := c.Param("fileId")
-	_ = id
 
 }
 

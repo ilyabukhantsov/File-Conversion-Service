@@ -48,3 +48,9 @@ func (c LibreOffice) Convert(path string) (status string, newFilePath string) {
 	fmt.Println("Converted")
 	return "200", "file/file.dox"
 }
+
+func (c LibreOffice) FileCheck(path string) error {
+	fmt.Println("Exist")
+	return nil
+
+}

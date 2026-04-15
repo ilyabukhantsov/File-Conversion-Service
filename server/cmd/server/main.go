@@ -15,6 +15,7 @@ func main() {
 	var mockFlag = flag.Bool("mock", false, "mock server")
 	flag.Parse()
 
+	//NOTE Refactoring of this will cost a lot of time with intepreting DI concept with, will fix later
 	if *mockFlag {
 		fmt.Println("Mock server is activating...")
 		router.POST("/files/upload", handler.MockFileUpload)
@@ -30,5 +31,6 @@ func main() {
 	conventor := libreoffice.LibreOffice{}
 	service := service.NewService(conventor)
 	service.HealthCheck()
+	service.FileCheck("/home/cyber/Documents/GoGameV3/server/files/mock.docx")
 	router.Run(":8080")
 }

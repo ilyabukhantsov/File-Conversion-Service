@@ -3,6 +3,7 @@ package service
 type Conventor interface {
 	HealthCheck() string
 	Convert(path string) (status string, newFilePath string)
+	FileCheck(path string) error
 }
 
 type Service struct {
