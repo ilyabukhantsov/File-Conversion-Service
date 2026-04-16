@@ -3,6 +3,7 @@ package main
 import (
 	"GoGameV3/internal/handler"
 	"GoGameV3/internal/service"
+	"GoGameV3/middleware/cors"
 	"GoGameV3/pkg/libreoffice"
 	"flag"
 	"fmt"
@@ -12,10 +13,12 @@ import (
 
 func main() {
 	router := gin.Default()
+	router.Use(cors.CORSMidlleware())
+
 	var mockFlag = flag.Bool("mock", false, "mock server")
 	flag.Parse()
 
-	//NOTE Refactoring of this will cost a lot of time with intepreting DI concept with, will fix later
+	//NOTE for front-end reason we
 	if *mockFlag {
 		fmt.Println("Mock server is activating...")
 		router.POST("/files/upload", handler.MockFileUpload)
