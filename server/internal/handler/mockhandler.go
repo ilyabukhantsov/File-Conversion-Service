@@ -25,7 +25,7 @@ func MockFileUpload(c *gin.Context) {
 	_ = file
 
 	c.JSON(200, gin.H{
-		"fileId": "abc123",
+		"fileId": "mock200",
 	})
 }
 func MockConvertFileById(c *gin.Context) {
