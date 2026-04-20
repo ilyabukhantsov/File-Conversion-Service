@@ -5,9 +5,16 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 )
 
 type LibreOffice struct{}
+
+// FileCheck implements [service.Conventor].
+func (c LibreOffice) FileCheck(path string) error {
+	panic("unimplemented")
+}
 
 // TODO Make humanlike realisation
 func (c LibreOffice) HealthCheck() string {
@@ -43,13 +50,25 @@ func (c LibreOffice) HealthCheck() string {
 	return string("PASS")
 }
 
-// TODO Realise it
-func (c LibreOffice) Convert(path string) (status string, newFilePath string) {
-	fmt.Println("Converted")
-	return "200", "file/file.dox"
+func isExist(path string) error {
+	_, err := os.Stat(path)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
 
-func (c LibreOffice) FileCheck(path string) error {
-	fmt.Println("Exist")
-	return nil
+func (c LibreOffice) Convert(path string, outputPath string) (newFilePath string, err error) {
+	if err := isExist(path); err != nil {
+		return "", err
+	}
+
+	cmd := exec.Command("soffice", "--headless", "--convert-to", "pdf", "--outdir", outputPath, path)
+	if err := cmd.Run(); err != nil {
+		return "", err
+	}
+
+	newFilePath = strings.TrimSuffix(path, filepath.Ext(path)) + ".pdf"
+	return newFilePath, nil
 }
