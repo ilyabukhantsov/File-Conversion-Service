@@ -1,35 +1,27 @@
 package router
 
 import (
-	"GoGameV3/internal/handler"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(h *handler.Handler) *gin.Engine {
+// Интерфейс живет здесь. Он описывает, ЧТО роутеру нужно от хендлера.
+type Handler interface {
+	UploadFile(c *gin.Context)
+	ConvertFile(c *gin.Context)
+	DownloadFile(c *gin.Context)
+	Health(c *gin.Context)
+}
+
+func SetupRouter(h Handler) *gin.Engine {
 	router := gin.Default()
 
-	router.POST("/files/upload", func(c *gin.Context) {
-		c.String(http.StatusOK, "Hello")
-		log.Printf("It works")
-	})
-	router.POST("/files/:fileId/convert", func(c *gin.Context) {
-		id := c.Param("fileId")
-		c.String(http.StatusOK, "Hello "+id)
-		log.Printf("It works")
-	})
-	router.GET("/files/:convertedFileId", func(c *gin.Context) {
-		id := c.Param("convertedFileId")
-		c.String(http.StatusOK, "Hello "+id)
-		log.Printf("It works")
-	})
-	router.GET("/files/:convertedFileId/download", func(c *gin.Context) {
-		id := c.Param("convertedFileId")
-		c.String(http.StatusOK, "Hello "+id)
-		log.Printf("It works")
-	})
+	// Навешиваем реальные методы хендлера на маршруты
+	router.POST("/files/upload", h.UploadFile)
+	router.POST("/files/:fileId/convert", h.ConvertFile)
+	router.GET("/files/:convertedFileId/download", h.DownloadFile)
+
+	// Health Check
+	router.GET("/health", h.Health)
 
 	return router
 }

@@ -1,15 +1,19 @@
 package service
 
-type Conventor interface {
-	HealthCheck() string
-	Convert(path string) (status string, newFilePath string)
-	FileCheck(path string) error
+type FileConverter interface {
+	Convert(inputPath string) (string, error)
 }
 
 type Service struct {
-	Conventor
+	converter FileConverter
 }
 
-func NewService(c Conventor) *Service {
-	return &Service{Conventor: c}
+func NewService(c FileConverter) *Service {
+	return &Service{
+		converter: c,
+	}
 }
+
+func (s *Service) Convert(path string) (newFilePath string, err error)
+func (s *Service) Upload() (newFilePath string, err error)
+func (s *Service) Download(path string) (err error)
