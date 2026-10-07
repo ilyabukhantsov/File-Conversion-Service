@@ -1,16 +1,14 @@
 package dto
 
 type UploadResponse struct {
-	FileId string `json:"fileid"`
+	FileID   string `json:"fileId"`
+	Filename string `json:"filename"`
 }
 
 type ConvertResponse struct {
-	ConvertedFileId string `json:"convertedFileId"`
-	Status          string `json:"status"`
+	ConvertedFileID string `json:"convertedFileId"`
 }
 
-type Error struct {
-	Code    string         `json:"code"`
-	Message string         `json:"message"`
-	Details map[string]any `json:"details,omitempty"`
+type ErrorResponse struct {
+	Error string `json:"error"`
 }

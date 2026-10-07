@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Интерфейс живет здесь. Он описывает, ЧТО роутеру нужно от хендлера.
 type Handler interface {
 	UploadFile(c *gin.Context)
 	ConvertFile(c *gin.Context)
@@ -12,16 +11,15 @@ type Handler interface {
 	Health(c *gin.Context)
 }
 
-func SetupRouter(h Handler) *gin.Engine {
-	router := gin.Default()
+func SetupRouter(h Handler, middleware ...gin.HandlerFunc) *gin.Engine {
+	r := gin.Default()
+	r.Use(middleware...)
 
-	// Навешиваем реальные методы хендлера на маршруты
-	router.POST("/files/upload", h.UploadFile)
-	router.POST("/files/:fileId/convert", h.ConvertFile)
-	router.GET("/files/:convertedFileId/download", h.DownloadFile)
+	r.POST("/files/upload", h.UploadFile)
+	r.POST("/files/:id/convert", h.ConvertFile)
+	r.GET("/files/:id/download", h.DownloadFile)
 
-	// Health Check
-	router.GET("/health", h.Health)
+	r.GET("/health", h.Health)
 
-	return router
+	return r
 }

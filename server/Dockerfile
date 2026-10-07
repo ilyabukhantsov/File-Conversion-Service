@@ -1,43 +1,38 @@
-FROM debian:bookworm-slim AS builder
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV GO_VERSION=1.26.2
-
-RUN apt-get update && apt-get install -y \
-    wget \
-    ca-certificates \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
-    rm go${GO_VERSION}.linux-amd64.tar.gz
-
-ENV PATH="/usr/local/go/bin:${PATH}"
-
+FROM golang:1.26 AS builder
 WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-
-RUN CGO_ENABLED=0 GOOS=linux go build -o /gogamev3 ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux go build -o /server ./cmd/server
 
 FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y \
-    libreoffice \
-    ca-certificates \
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libreoffice-writer \
+        libreoffice-calc \
+        libreoffice-impress \
+        fonts-dejavu \
+        fonts-liberation \
+        ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+RUN useradd -m -u 1000 app && mkdir -p /data && chown app:app /data
 
-WORKDIR /app
+ENV HOME=/home/app \
+    DATA_DIR=/data \
+    PORT=8080 \
+    GIN_MODE=release
 
-COPY --from=builder /gogamev3 /gogamev3
+COPY --from=builder /server /server
 
+USER app
+VOLUME ["/data"]
 EXPOSE 8080
 
-CMD ["/gogamev3"]
+CMD ["/server"]
